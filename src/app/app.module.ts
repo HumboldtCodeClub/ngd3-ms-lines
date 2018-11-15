@@ -5,10 +5,12 @@ import { FormsModule } from '@angular/forms';
 import { MatButtonModule, MatCardModule, MatCheckboxModule, MatFormFieldModule, MatInputModule, MatSelectModule } from '@angular/material';
 
 import { AppComponent } from './app.component';
+import { MSLineChartComponent } from './ms-line-chart.component';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    MSLineChartComponent
   ],
   imports: [
     BrowserModule,
