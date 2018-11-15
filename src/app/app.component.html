@@ -1,20 +1,54 @@
-<!--The content below is only a placeholder and can be replaced.-->
-<div style="text-align:center">
-  <h1>
-    Welcome to {{ title }}!
-  </h1>
-  <img width="300" alt="Angular Logo" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNTAgMjUwIj4KICAgIDxwYXRoIGZpbGw9IiNERDAwMzEiIGQ9Ik0xMjUgMzBMMzEuOSA2My4ybDE0LjIgMTIzLjFMMTI1IDIzMGw3OC45LTQzLjcgMTQuMi0xMjMuMXoiIC8+CiAgICA8cGF0aCBmaWxsPSIjQzMwMDJGIiBkPSJNMTI1IDMwdjIyLjItLjFWMjMwbDc4LjktNDMuNyAxNC4yLTEyMy4xTDEyNSAzMHoiIC8+CiAgICA8cGF0aCAgZmlsbD0iI0ZGRkZGRiIgZD0iTTEyNSA1Mi4xTDY2LjggMTgyLjZoMjEuN2wxMS43LTI5LjJoNDkuNGwxMS43IDI5LjJIMTgzTDEyNSA1Mi4xem0xNyA4My4zaC0zNGwxNy00MC45IDE3IDQwLjl6IiAvPgogIDwvc3ZnPg==">
-</div>
-<h2>Here are some links to help you start: </h2>
-<ul>
-  <li>
-    <h2><a target="_blank" rel="noopener" href="https://angular.io/tutorial">Tour of Heroes</a></h2>
-  </li>
-  <li>
-    <h2><a target="_blank" rel="noopener" href="https://github.com/angular/angular-cli/wiki">CLI Documentation</a></h2>
-  </li>
-  <li>
-    <h2><a target="_blank" rel="noopener" href="https://blog.angular.io/">Angular blog</a></h2>
-  </li>
-</ul>
+<div class="container">
+  <div class="row mt-5">
+    <div class="col">
+      <mat-card>
+        <mat-card-title>
+          Chart Configuration
+        </mat-card-title>
+        <mat-card-content>
+          <section class="config-section">
+            <mat-form-field class="config-margin">
+              <input matInput type="number" placeholder="Charts" [min]="1" [max]="3" [(ngModel)]="chartCount">
+            </mat-form-field>
+            <mat-form-field class="config-margin">
+              <input matInput type="number" placeholder="Lines" [min]="1" [max]="10" [(ngModel)]="lineCount">
+            </mat-form-field>
+            <mat-form-field class="config-margin">
+              <input matInput type="number" placeholder="Points" [min]="2" [max]="1000" [(ngModel)]="pointCount">
+            </mat-form-field>
+          </section>
+          <section class="config-section">
+              <mat-checkbox class="config-margin" [(ngModel)]="randomLineCount">Randomize line count</mat-checkbox>
+              <mat-checkbox class="config-margin" [(ngModel)]="randomPointCount">Randomize point count</mat-checkbox>
+          </section>
+          <section class="config-section">
+              <mat-checkbox class="config-margin" style="height: 55px;" [(ngModel)]="binned">Binned</mat-checkbox>
+              <mat-form-field class="config-margin" *ngIf="binned">
+                <input matInput type="number" placeholder="Bins" [min]="10" [max]="100" [(ngModel)]="binCount">
+              </mat-form-field>
+              <mat-form-field class="config-margin" *ngIf="binned">
+                <mat-select placeholder="Bin Type" [(ngModel)]="frequency" name="binType">
+                  <mat-option *ngFor="let binType of binTypes" [value]="binType.value">
+                    {{binType.viewValue}}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+          </section>
+          <section class="config-section">
+              <button class="config-margin" mat-raised-button (click)="refreshData()">Refresh</button>
+          </section>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
 
+  <div class="row mt-5">
+    <div class="col">
+      <mat-card>
+          <mat-card-title>
+              Multi Series Line Chart
+            </mat-card-title>
+      </mat-card>
+    </div>
+  </div>
+</div>
