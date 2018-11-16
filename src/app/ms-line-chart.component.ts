@@ -7,6 +7,27 @@ export class LineData {
   points: any[] = [];
 }
 
+export enum CurveTypeEnum {
+  BASIS = 'Basis', // a cubic basis spline, repeating the end points.
+  BASIS_CLOSED = 'Basis Closed', // a closed cubic basis spline.
+  BASIS_OPEN = 'Basis Open', // a cubic basis spline.
+  BUNDLE = 'Bundle', // a straightened cubic basis spline.
+  CARDINAL = 'Cardinal', // a cubic cardinal spline, with one//sided difference at each end.
+  CARDINAL_CLOSED = 'Cardinal Closed', // a closed cubic cardinal spline.
+  CARDINAL_OPEN = 'Cardinal Open', // a cubic cardinal spline.
+  CATMULL_ROM = 'Catmull-Rom', // a cubic Catmull–Rom spline, with one//sided difference at each end.
+  CATMULL_ROM_CLOSED = 'Catmull-Rom Closed', // a closed cubic Catmull–Rom spline.
+  CATMULL_ROM_OPEN = 'Catmull-Rom Open', // a cubic Catmull–Rom spline.
+  LINEAR = 'Linear', // a polyline.
+  LINEAR_CLOSED = 'Linear Closed', // a closed polyline.
+  MONOTONE_X = 'Monotone X', // a cubic spline that, given monotonicity in x, preserves it in y.
+  MONOTONE_Y = 'Monotone Y', // a cubic spline that, given monotonicity in y, preserves it in x.
+  NATURAL = 'Natural', // a natural cubic spline.
+  STEP = 'Step', // a piecewise constant function.
+  STEP_AFTER = 'Step After', // a piecewise constant function.
+  STEP_BEFORE = 'Step Before', // a piecewise constant function.
+}
+
 @Component({
   selector: 'ms-line-chart',
   template: '<ng-content></ng-content>'
@@ -18,6 +39,7 @@ export class MSLineChartComponent implements AfterViewInit, OnChanges {
   @Input() frequency = false;
   @Input() binCount = 40;
   @Input() scaleXtoDataset = false;
+  @Input() curveType = CurveTypeEnum.BASIS;
 
   private margin = { top: 40, right: 40, bottom: 40, left: 40 };
   private dimensions = { width: 0, height: 0 };
@@ -74,6 +96,7 @@ export class MSLineChartComponent implements AfterViewInit, OnChanges {
    *
    */
   ngOnChanges() {
+    this.selectCurveType();
     this.setXScale();
     this.setXAxis();
     this.setYScale();
@@ -99,12 +122,12 @@ export class MSLineChartComponent implements AfterViewInit, OnChanges {
     const flatlineGenerator = d3.line()
       .x((d) => this.scale.x(d))
       .y(this.dimensions.height)
-      .curve(d3.curveMonotoneX);
+      .curve(this.selectCurveType());
 
     const lineGenerator = d3.line()
       .x((d) => this.scale.x(d[0]))
       .y((d) => this.scale.y(d[1]))
-      .curve(d3.curveMonotoneX);
+      .curve(this.selectCurveType());
 
     const binlineGenerator = d3.line()
       .x((d) => this.scale.x(d.x0))
@@ -117,7 +140,7 @@ export class MSLineChartComponent implements AfterViewInit, OnChanges {
           return this.scale.y(avg);
         }
       })
-      .curve(d3.curveMonotoneX);
+      .curve(this.selectCurveType());
 
     // JOIN
     const paths = this.lineGroup.selectAll('.ms-path')
@@ -277,5 +300,67 @@ export class MSLineChartComponent implements AfterViewInit, OnChanges {
     this.axes.y
       .attr('transform', `translate(${this.margin.left}, 0)`)
       .call(d3.axisLeft(this.scale.y));
+  }
+
+  private selectCurveType() {
+    switch (this.curveType) {
+      case CurveTypeEnum.BASIS: {
+        return d3.curveBasis;
+      }
+      case CurveTypeEnum.BASIS_CLOSED: {
+        return d3.curveBasisClosed;
+      }
+      case CurveTypeEnum.BASIS_OPEN: {
+        return d3.curveBasisOpen;
+      }
+      case CurveTypeEnum.BUNDLE: {
+        return d3.curveBundle;
+      }
+      case CurveTypeEnum.CARDINAL: {
+        return d3.curveCardinal;
+      }
+      case CurveTypeEnum.CARDINAL_CLOSED: {
+        return d3.curveCardinalClosed;
+      }
+      case CurveTypeEnum.CARDINAL_OPEN: {
+        return d3.curveCardinalOpen;
+      }
+      case CurveTypeEnum.CATMULL_ROM: {
+        return d3.curveCatmullRom;
+      }
+      case CurveTypeEnum.CATMULL_ROM_CLOSED: {
+        return d3.curveCatmullRomClosed;
+      }
+      case CurveTypeEnum.CATMULL_ROM_OPEN: {
+        return d3.curveCatmullRomOpen;
+      }
+      case CurveTypeEnum.LINEAR: {
+        return d3.curveLinear;
+      }
+      case CurveTypeEnum.LINEAR_CLOSED: {
+        return d3.curveLinearClosed;
+      }
+      case CurveTypeEnum.MONOTONE_X: {
+        return d3.curveMonotoneX;
+      }
+      case CurveTypeEnum.MONOTONE_Y: {
+        return d3.curveMonotoneY;
+      }
+      case CurveTypeEnum.NATURAL: {
+        return d3.curveNatural;
+      }
+      case CurveTypeEnum.STEP: {
+        return d3.curveStep;
+      }
+      case CurveTypeEnum.STEP_AFTER: {
+        return d3.curveStepAfter;
+      }
+      case CurveTypeEnum.STEP_BEFORE: {
+        return d3.curveStepBefore;
+      }
+      default: {
+        return d3.curveMonotoneX;
+      }
+    }
   }
 }

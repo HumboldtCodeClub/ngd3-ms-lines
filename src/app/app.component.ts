@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 
-import { LineData } from './ms-line-chart.component';
+import { LineData, CurveTypeEnum } from './ms-line-chart.component';
 
 export interface BinType {
   value: boolean;
@@ -22,6 +22,9 @@ export class AppComponent {
   binCount = 25;
   frequency = false;
   scaleXtoDataset = false;
+  curveTypes = CurveTypeEnum;
+  curveTypeKeys = Object.keys(CurveTypeEnum);
+  selectedCurveType = CurveTypeEnum.BASIS;
 
   binTypes: BinType[] = [
     { value: true, viewValue: 'Frequency'},

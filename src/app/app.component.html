@@ -17,6 +17,11 @@
           <section class="config-section">
               <mat-checkbox class="config-margin" [(ngModel)]="randomLineCount" (ngModelChange)="refreshData()">Randomize line count</mat-checkbox>
               <mat-checkbox class="config-margin" [(ngModel)]="randomPointCount" (ngModelChange)="refreshData()">Randomize point count</mat-checkbox>
+              <mat-form-field class="config-margin">
+                <mat-select placeholder="Curve Type" [(ngModel)]="selectedCurveType">
+                  <mat-option *ngFor="let key of curveTypeKeys" value="{{curveTypes[key]}}">{{curveTypes[key]}}</mat-option>
+                </mat-select>
+              </mat-form-field>
           </section>
           <section class="config-section">
               <mat-checkbox class="config-margin" [(ngModel)]="binned">Binned</mat-checkbox>
@@ -41,7 +46,7 @@
           Multi Series Line Chart
         </mat-card-title>
         <mat-card-content>
-            <ms-line-chart [dataset]="series" [frequency]="frequency" [binned]="binned" [binCount]="binCount" [scaleXtoDataset]="scaleXtoDataset"></ms-line-chart>
+            <ms-line-chart [dataset]="series" [frequency]="frequency" [binned]="binned" [binCount]="binCount" [scaleXtoDataset]="scaleXtoDataset" [curveType]="selectedCurveType"></ms-line-chart>
         </mat-card-content>
       </mat-card>
     </div>
