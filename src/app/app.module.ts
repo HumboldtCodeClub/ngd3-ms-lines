@@ -2,7 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { MatButtonModule, MatCardModule, MatCheckboxModule, MatFormFieldModule, MatInputModule, MatSelectModule } from '@angular/material';
+import { MatButtonModule, MatCardModule, MatCheckboxModule, MatFormFieldModule, MatInputModule, MatRadioModule } from '@angular/material';
 
 import { AppComponent } from './app.component';
 import { MSLineChartComponent } from './ms-line-chart.component';
@@ -21,7 +21,7 @@ import { MSLineChartComponent } from './ms-line-chart.component';
     MatCheckboxModule,
     MatFormFieldModule,
     MatInputModule,
-    MatSelectModule
+    MatRadioModule
   ],
   providers: [ ],
   bootstrap: [ AppComponent ]

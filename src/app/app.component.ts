@@ -14,7 +14,6 @@ export interface BinType {
 })
 export class AppComponent {
   series: LineData[] = [];
-  chartCount = 1;
   lineCount = 3;
   pointCount = 20;
   randomLineCount = false;
@@ -29,38 +28,47 @@ export class AppComponent {
   ];
 
   refreshData() {
-    // Temporary array of line data
+    // temporary array of line data
     const temp: LineData[] = [];
 
-    // How many lines should we display?
-    const seriesCount = Math.floor(Math.random() * 11);
-    console.log(`creating ${seriesCount} data entries`);
+    // how many lines should we display?
+    let seriesCount = this.lineCount;
+    if (this.randomLineCount) {
+      seriesCount = Math.floor(Math.random() * (this.lineCount + 1));
+    }
 
     // Create line data for each line we want
     for (let i = 0; i < seriesCount; i++) {
-      // Data for this line
+      // data for this line
       const data = new LineData;
       data.id = `${i}`;
 
       // temporary point array
       const points = [];
-      // How many points do we want for this line?
-      const dataPoints = Math.floor(Math.random() * 199) + 2;
+      // how many points do we want for this line?
+      let dataPoints = this.pointCount;
+      if (this.randomPointCount) {
+        dataPoints = Math.floor(Math.random() * (this.pointCount + 1));
+      }
       for (let j = 0; j < dataPoints; j++) {
-        // Calculate this points x and y values and add it to the temp array of points
-        const a = Math.floor(Math.random() * 1000);
-        const b = Math.floor(Math.random() * 100);
+        // calculate this points x and y values and add it to the temp array of points
+        const a = Math.floor(Math.random() * 1001);
+        const b = Math.floor(Math.random() * 101);
         points.push([a,b]);
       }
+
+      // sorting points isn't needed for binned charts, 
+      // but if we don't sort when plotting each point it results in a 'scribbled' line
+      points.sort(function(a, b) { return a[0] - b[0]});
       
-      // Set the point values for this line
+      // set the point values for this line
       data.points = points;
 
-      // Add this line to the set of lines
+      // sdd this line to the set of lines
       temp.push(data);
     }
 
-    // Set our actual data to the temp set of lines we just generated
+    // set our actual data to the temp set of lines we just generated
     this.series = temp;
   }
 }

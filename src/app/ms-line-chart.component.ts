@@ -15,7 +15,7 @@ export class MSLineChartComponent implements AfterViewInit, OnChanges {
   
   @Input() dataset: LineData[] = [];
   @Input() binned = true;
-  @Input() frequency = true;
+  @Input() frequency = false;
   @Input() binCount = 40;
 
   private margin = { top:40, right: 40, bottom: 40, left: 40 };
@@ -100,6 +100,11 @@ export class MSLineChartComponent implements AfterViewInit, OnChanges {
       .y(this.dimensions.height)
       .curve(d3.curveMonotoneX);
 
+    const lineGenerator = d3.line()
+      .x((d) => this.scale.x(d[0]))
+      .y((d) => this.scale.y(d[1]))
+      .curve(d3.curveMonotoneX);
+
     const binlineGenerator = d3.line()
       .x((d) => this.scale.x(d.x0))
       .y((d) => {
@@ -132,15 +137,19 @@ export class MSLineChartComponent implements AfterViewInit, OnChanges {
 
     // UPDATE
     paths.transition(lineTransition)
-      //.attr('d', (d) => newlineGenerator(d.points));
       .attrTween('d', (d) => {
         const previous = d3.select(`#ms-path-${d.id}`).attr('d');
-        const bins = d3.histogram()
-          .domain(this.scale.x.domain())
-          .thresholds(this.scale.x.ticks(this.binCount))
-          .value((d) => d[0])
-          (d.points);
-        const current = binlineGenerator(bins);
+        let current = null;
+        if (this.binned) {
+          const bins = d3.histogram()
+            .domain(this.scale.x.domain())
+            .thresholds(this.scale.x.ticks(this.binCount))
+            .value((d) => d[0])
+            (d.points);
+          current = binlineGenerator(bins);
+        } else {
+          current = lineGenerator(d.points);
+        }
         return interpolatePath(previous, current);
       });
 
@@ -148,7 +157,6 @@ export class MSLineChartComponent implements AfterViewInit, OnChanges {
     paths.enter().append('path')
       .attr('id', (d) => `ms-path-${d.id}`)
       .attr('class', (d) => `ms-path ms-color-${d.id}`)
-      //.attr('style', 'stroke:blue')
       .attr('fill', 'none')
       .attr('stroke-width', 1.5)
       .attr('stroke-linejoin', 'round')
@@ -157,12 +165,17 @@ export class MSLineChartComponent implements AfterViewInit, OnChanges {
       .transition(lineTransition)
       .attrTween('d', (d) => {
         const previous = d3.select(`#ms-path-${d.id}`).attr('d');
-        const bins = d3.histogram()
-          .domain(this.scale.x.domain())
-          .thresholds(this.scale.x.ticks(this.binCount))
-          .value((d) => d[0])
-          (d.points);
-        const current = binlineGenerator(bins);
+        let current = null;
+        if (this.binned) {
+          const bins = d3.histogram()
+            .domain(this.scale.x.domain())
+            .thresholds(this.scale.x.ticks(this.binCount))
+            .value((d) => d[0])
+            (d.points);
+          current = binlineGenerator(bins);
+        } else {
+          current = lineGenerator(d.points)
+        }
         return interpolatePath(previous, current);
       });
   }
@@ -202,19 +215,28 @@ export class MSLineChartComponent implements AfterViewInit, OnChanges {
 
     // calculate domain
     const dmin = 0;
-    let dmax = d3.max(this.dataset, (d) => {
-      const bins = d3.histogram()
-        .domain(this.scale.x.domain())
-        .thresholds(this.scale.x.ticks(this.binCount))
-        .value((d) => d[0])
-        (d.points);
+    let dmax = 0;
 
-      if (this.frequency) {
-        return d3.max(bins, (b) => b.length);
-      } else {
-        return d3.max(bins, (b) => d3.mean(b, (p) => p[1]));
-      }
-    });
+    if (this.binned) {
+      dmax = d3.max(this.dataset, (d) => {
+        const bins = d3.histogram()
+          .domain(this.scale.x.domain())
+          .thresholds(this.scale.x.ticks(this.binCount))
+          .value((d) => d[0])
+          (d.points);
+  
+        if (this.frequency) {
+          return d3.max(bins, (b) => b.length);
+        } else {
+          return d3.max(bins, (b) => d3.mean(b, (p) => p[1]));
+        }
+      });
+    } else {
+      dmax = d3.max(this.dataset, (d) => {
+        return d3.max(d.points, (p) => p[1]);
+      });
+    }
+
     dmax = isNaN(dmax) ? 10 : dmax;
 
     // calculate range

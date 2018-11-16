@@ -1,5 +1,5 @@
-<div class="container">
-  <div class="row mt-5">
+<div class="container mb-3">
+  <div class="row mt-3">
     <div class="col">
       <mat-card>
         <mat-card-title>
@@ -8,13 +8,10 @@
         <mat-card-content>
           <section class="config-section">
             <mat-form-field class="config-margin">
-              <input matInput type="number" placeholder="Charts" [min]="1" [max]="3" [(ngModel)]="chartCount">
-            </mat-form-field>
-            <mat-form-field class="config-margin">
               <input matInput type="number" placeholder="Lines" [min]="1" [max]="10" [(ngModel)]="lineCount">
             </mat-form-field>
             <mat-form-field class="config-margin">
-              <input matInput type="number" placeholder="Points" [min]="2" [max]="1000" [(ngModel)]="pointCount">
+              <input matInput type="number" placeholder="Points" [(ngModel)]="pointCount">
             </mat-form-field>
           </section>
           <section class="config-section">
@@ -22,17 +19,11 @@
               <mat-checkbox class="config-margin" [(ngModel)]="randomPointCount">Randomize point count</mat-checkbox>
           </section>
           <section class="config-section">
-              <mat-checkbox class="config-margin" style="height: 55px;" [(ngModel)]="binned">Binned</mat-checkbox>
+              <mat-checkbox class="config-margin" [(ngModel)]="binned">Binned</mat-checkbox>
               <mat-form-field class="config-margin" *ngIf="binned">
                 <input matInput type="number" placeholder="Bins" [(ngModel)]="binCount">
               </mat-form-field>
-              <mat-form-field class="config-margin" *ngIf="binned">
-                <mat-select placeholder="Bin Type" [(ngModel)]="frequency" name="binType">
-                  <mat-option *ngFor="let binType of binTypes" [value]="binType.value">
-                    {{binType.viewValue}}
-                  </mat-option>
-                </mat-select>
-              </mat-form-field>
+              <mat-checkbox class="config-margin" *ngIf="binned" [(ngModel)]="frequency">Frequency</mat-checkbox>
           </section>
           <section class="config-section">
               <button class="config-margin" mat-raised-button (click)="refreshData()">Refresh</button>
@@ -42,14 +33,14 @@
     </div>
   </div>
 
-  <div class="row mt-5">
+  <div class="row mt-3">
     <div class="col">
       <mat-card>
         <mat-card-title>
           Multi Series Line Chart
         </mat-card-title>
         <mat-card-content>
-            <ms-line-chart [dataset]="series" [frequency]="frequency" [binCount]="binCount"></ms-line-chart>
+            <ms-line-chart [dataset]="series" [frequency]="frequency" [binned]="binned" [binCount]="binCount"></ms-line-chart>
         </mat-card-content>
       </mat-card>
     </div>
