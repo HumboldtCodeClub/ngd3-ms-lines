@@ -1,11 +1,6 @@
 import { Component } from '@angular/core';
 
-import { LineData, CurveTypeEnum } from './ms-line-chart.component';
-
-export interface BinType {
-  value: boolean;
-  viewValue: string;
-}
+import { LineData, CurveTypeEnum, BinTypeEnum } from './ms-line-chart.component';
 
 @Component({
   selector: 'app-root',
@@ -20,16 +15,13 @@ export class AppComponent {
   randomPointCount = true;
   binned = true;
   binCount = 25;
-  frequency = false;
   scaleXtoDataset = false;
   curveTypes = CurveTypeEnum;
   curveTypeKeys = Object.keys(CurveTypeEnum);
-  selectedCurveType = CurveTypeEnum.BASIS;
-
-  binTypes: BinType[] = [
-    { value: true, viewValue: 'Frequency'},
-    { value: true, viewValue: 'Average' }
-  ];
+  selectedCurveType = CurveTypeEnum.MONOTONE_X;
+  binTypes = BinTypeEnum;
+  binTypeKeys = Object.keys(BinTypeEnum);
+  selectedBinType = BinTypeEnum.FREQUENCY;
 
   refreshData() {
     // temporary array of line data

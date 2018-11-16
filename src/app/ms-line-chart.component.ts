@@ -7,6 +7,11 @@ export class LineData {
   points: any[] = [];
 }
 
+export enum BinTypeEnum {
+  AVERAGE = 'Average', // Use the average of all y values in each bin.
+  FREQUENCY = 'Frequency', //
+}
+
 export enum CurveTypeEnum {
   BASIS = 'Basis', // a cubic basis spline, repeating the end points.
   BASIS_CLOSED = 'Basis Closed', // a closed cubic basis spline.
@@ -36,10 +41,10 @@ export class MSLineChartComponent implements AfterViewInit, OnChanges {
 
   @Input() dataset: LineData[] = [];
   @Input() binned = true;
-  @Input() frequency = false;
+  @Input() binType = BinTypeEnum.FREQUENCY;
   @Input() binCount = 40;
   @Input() scaleXtoDataset = false;
-  @Input() curveType = CurveTypeEnum.BASIS;
+  @Input() curveType = CurveTypeEnum.MONOTONE_X;
 
   private margin = { top: 40, right: 40, bottom: 40, left: 40 };
   private dimensions = { width: 0, height: 0 };
@@ -132,7 +137,7 @@ export class MSLineChartComponent implements AfterViewInit, OnChanges {
     const binlineGenerator = d3.line()
       .x((d) => this.scale.x(d.x0))
       .y((d) => {
-        if (this.frequency) {
+        if (this.binType === BinTypeEnum.FREQUENCY) {
           return this.scale.y(d.length);
         } else {
           let avg = d3.mean(d, (p) => p[1]);
@@ -261,7 +266,7 @@ export class MSLineChartComponent implements AfterViewInit, OnChanges {
           .value((p) => p[0])
           (d.points);
 
-        if (this.frequency) {
+        if (this.binType === BinTypeEnum.FREQUENCY) {
           return d3.max(bins, (b) => b.length);
         } else {
           return d3.max(bins, (b) => d3.mean(b, (p) => p[1]));

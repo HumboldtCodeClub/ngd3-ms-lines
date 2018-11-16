@@ -28,7 +28,11 @@
               <mat-form-field class="config-margin" *ngIf="binned">
                 <input matInput type="number" placeholder="Bins" [(ngModel)]="binCount">
               </mat-form-field>
-              <mat-checkbox class="config-margin" *ngIf="binned" [(ngModel)]="frequency">Frequency</mat-checkbox>
+              <mat-form-field class="config-margin" *ngIf="binned">
+                <mat-select placeholder="Bin Type" [(ngModel)]="selectedBinType">
+                  <mat-option *ngFor="let key of binTypeKeys" value="{{binTypes[key]}}">{{binTypes[key]}}</mat-option>
+                </mat-select>
+              </mat-form-field>
               <mat-checkbox class="config-margin" [(ngModel)]="scaleXtoDataset">Scale x to dataset</mat-checkbox>
           </section>
           <section class="config-section">
@@ -46,7 +50,7 @@
           Multi Series Line Chart
         </mat-card-title>
         <mat-card-content>
-            <ms-line-chart [dataset]="series" [frequency]="frequency" [binned]="binned" [binCount]="binCount" [scaleXtoDataset]="scaleXtoDataset" [curveType]="selectedCurveType"></ms-line-chart>
+            <ms-line-chart [dataset]="series" [binType]="selectedBinType" [binned]="binned" [binCount]="binCount" [scaleXtoDataset]="scaleXtoDataset" [curveType]="selectedCurveType"></ms-line-chart>
         </mat-card-content>
       </mat-card>
     </div>
