@@ -15,12 +15,12 @@ export interface BinType {
 export class AppComponent {
   series: LineData[] = [];
   lineCount = 3;
-  pointCount = 20;
+  pointCount = 200;
   randomLineCount = false;
-  randomPointCount = false;
+  randomPointCount = true;
   binned = true;
-  binCount = 50;
-  frequency = true;
+  binCount = 25;
+  frequency = false;
 
   binTypes: BinType[] = [
     { value: true, viewValue: 'Frequency'},

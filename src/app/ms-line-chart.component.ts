@@ -196,8 +196,16 @@ export class MSLineChartComponent implements AfterViewInit, OnChanges {
    * 
    */
   private setXScale() {
-    const dmin = 0;
-    const dmax = 1000;
+    let dmin = d3.min(this.dataset, (d) => {
+      return d3.min(d.points, (p) => p[0]);
+    });
+    dmin = isNaN(dmin) ? 0 : dmin;
+    
+    let dmax = d3.max(this.dataset, (d) => {
+      return d3.max(d.points, (p) => p[0]);
+    });
+    dmax = isNaN(dmax) ? 100 : dmax;
+
     const rmin = this.margin.left;
     let rmax = this.dimensions.width;
     rmax = rmax < rmin ? rmin : rmax;
