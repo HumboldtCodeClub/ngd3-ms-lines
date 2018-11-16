@@ -1,7 +1,6 @@
 import { Component, Input, HostListener, ElementRef, AfterViewInit, OnChanges } from '@angular/core';
 import * as d3 from 'd3';
 import { interpolatePath } from 'd3-interpolate-path';
-import { BindingScope } from '@angular/compiler/src/render3/view/template';
 
 export class LineData {
   id = '';
