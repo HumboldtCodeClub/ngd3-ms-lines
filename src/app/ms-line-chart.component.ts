@@ -1,6 +1,7 @@
 import { Component, Input, HostListener, ElementRef, AfterViewInit, OnChanges } from '@angular/core';
 import * as d3 from 'd3';
 import { interpolatePath } from 'd3-interpolate-path';
+import { BindingScope } from '@angular/compiler/src/render3/view/template';
 
 export class LineData {
   id = '';
@@ -53,6 +54,7 @@ export class MSLineChartComponent implements AfterViewInit, OnChanges {
   private svg: any;
   private axesGroup: any;
   private lineGroup: any;
+  private customBins: number[] = [];
 
   /**
    * Comments go here
@@ -157,7 +159,7 @@ export class MSLineChartComponent implements AfterViewInit, OnChanges {
         const previous = d3.select(`#ms-path-${d.id}`).attr('d');
         const bins = d3.histogram()
           .domain(this.scale.x.domain())
-          .thresholds(this.scale.x.ticks(this.binCount))
+          .thresholds(this.customBins)
           ([]);
         const current = binlineGenerator(bins);
         return interpolatePath(previous, current);
@@ -172,7 +174,7 @@ export class MSLineChartComponent implements AfterViewInit, OnChanges {
         if (this.binned) {
           const bins = d3.histogram()
             .domain(this.scale.x.domain())
-            .thresholds(this.scale.x.ticks(this.binCount))
+            .thresholds(this.customBins)
             .value((p) => p[0])
             (d.points);
           current = binlineGenerator(bins);
@@ -198,7 +200,7 @@ export class MSLineChartComponent implements AfterViewInit, OnChanges {
         if (this.binned) {
           const bins = d3.histogram()
             .domain(this.scale.x.domain())
-            .thresholds(this.scale.x.ticks(this.binCount))
+            .thresholds(this.customBins)
             .value((p) => p[0])
             (d.points);
           current = binlineGenerator(bins);
@@ -246,6 +248,22 @@ export class MSLineChartComponent implements AfterViewInit, OnChanges {
     this.scale.x = d3.scaleLinear()
       .domain([dmin, dmax])
       .range([rmin, rmax]);
+
+    // Calculate custom bins
+
+    this.customBins = [];
+    if (this.binCount <= 0) { return; }
+    const binWidth = dmax / this.binCount;
+    let currentBin = 0;
+    let ittr = 0;
+    while (currentBin < dmax) {
+      currentBin = binWidth * ittr;
+      if (dmin <= currentBin && currentBin <= dmax) {
+        this.customBins.push(currentBin);
+      }
+      ittr += 1;
+    }
+    console.log(this.customBins);
   }
 
 
@@ -262,7 +280,7 @@ export class MSLineChartComponent implements AfterViewInit, OnChanges {
       dmax = d3.max(this.dataset, (d) => {
         const bins = d3.histogram()
           .domain(this.scale.x.domain())
-          .thresholds(this.scale.x.ticks(this.binCount))
+          .thresholds(this.customBins)
           .value((p) => p[0])
           (d.points);
 
