@@ -27,6 +27,19 @@ export class AppComponent implements AfterViewInit {
     this.refreshData();
   }
 
+  resetConfiguration() {
+    this.lineCount = 3;
+    this.pointCount = 200;
+    this.randomLineCount = false;
+    this.randomPointCount = true;
+    this.binned = true;
+    this.binCount = 25;
+    this.scaleXtoDataset = false;
+    this.selectedCurveType = CurveTypeEnum.MONOTONE_X;
+    this.selectedBinType = BinTypeEnum.FREQUENCY;
+    this.refreshData();
+  }
+
   refreshData() {
     // temporary array of line data
     const temp: LineData[] = [];
