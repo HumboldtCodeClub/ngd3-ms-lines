@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 import { interpolatePath } from 'd3-interpolate-path';
 
 export class LineData {
-  id: string = '';
+  id = '';
   points: any[] = [];
 }
 
@@ -12,13 +12,14 @@ export class LineData {
   template: '<ng-content></ng-content>'
 })
 export class MSLineChartComponent implements AfterViewInit, OnChanges {
-  
+
   @Input() dataset: LineData[] = [];
   @Input() binned = true;
   @Input() frequency = false;
   @Input() binCount = 40;
+  @Input() scaleXtoDataset = false;
 
-  private margin = { top:40, right: 40, bottom: 40, left: 40 };
+  private margin = { top: 40, right: 40, bottom: 40, left: 40 };
   private dimensions = { width: 0, height: 0 };
   private scale = { x: d3.scaleLinear(), y: d3.scaleLinear() };
   private axes = { x: null, y: null };
@@ -28,7 +29,7 @@ export class MSLineChartComponent implements AfterViewInit, OnChanges {
 
   /**
    * Comments go here
-   * 
+   *
    * @param el Element Reference
    */
   constructor(private el: ElementRef) {
@@ -50,14 +51,14 @@ export class MSLineChartComponent implements AfterViewInit, OnChanges {
       .attr('transform', `translate(${this.margin.left},${this.margin.top})`);
 
     // Add the x-axis group
-    this.axes.x = this.axesGroup.append('g').attr('class','x-axis');
-  
+    this.axes.x = this.axesGroup.append('g').attr('class', 'x-axis');
+
     // Add the y-axis group
-    this.axes.y = this.axesGroup.append('g').attr('class','y-axis');
+    this.axes.y = this.axesGroup.append('g').attr('class', 'y-axis');
   }
 
   /**
-   * 
+   *
    */
   ngAfterViewInit() {
     this.setDimensions();
@@ -70,7 +71,7 @@ export class MSLineChartComponent implements AfterViewInit, OnChanges {
 
 
   /**
-   * 
+   *
    */
   ngOnChanges() {
     this.setXScale();
@@ -90,7 +91,7 @@ export class MSLineChartComponent implements AfterViewInit, OnChanges {
   }
 
   /**
-   * 
+   *
    */
   private update() {
     const lineTransition = d3.transition().duration(1000);
@@ -144,7 +145,7 @@ export class MSLineChartComponent implements AfterViewInit, OnChanges {
           const bins = d3.histogram()
             .domain(this.scale.x.domain())
             .thresholds(this.scale.x.ticks(this.binCount))
-            .value((d) => d[0])
+            .value((p) => p[0])
             (d.points);
           current = binlineGenerator(bins);
         } else {
@@ -161,7 +162,7 @@ export class MSLineChartComponent implements AfterViewInit, OnChanges {
       .attr('stroke-width', 1.5)
       .attr('stroke-linejoin', 'round')
       .attr('stroke-linecap', 'round')
-      .attr('d', flatlineGenerator([0,1000]))
+      .attr('d', flatlineGenerator([0, 1000]))
       .transition(lineTransition)
       .attrTween('d', (d) => {
         const previous = d3.select(`#ms-path-${d.id}`).attr('d');
@@ -170,18 +171,18 @@ export class MSLineChartComponent implements AfterViewInit, OnChanges {
           const bins = d3.histogram()
             .domain(this.scale.x.domain())
             .thresholds(this.scale.x.ticks(this.binCount))
-            .value((d) => d[0])
+            .value((p) => p[0])
             (d.points);
           current = binlineGenerator(bins);
         } else {
-          current = lineGenerator(d.points)
+          current = lineGenerator(d.points);
         }
         return interpolatePath(previous, current);
       });
   }
 
   /**
-   * 
+   *
    */
   private setDimensions() {
     const containerWidth = this.el.nativeElement.parentNode.offsetWidth;
@@ -193,18 +194,22 @@ export class MSLineChartComponent implements AfterViewInit, OnChanges {
   }
 
   /**
-   * 
+   *
    */
   private setXScale() {
-    let dmin = d3.min(this.dataset, (d) => {
-      return d3.min(d.points, (p) => p[0]);
-    });
-    dmin = isNaN(dmin) ? 0 : dmin;
-    
-    let dmax = d3.max(this.dataset, (d) => {
-      return d3.max(d.points, (p) => p[0]);
-    });
-    dmax = isNaN(dmax) ? 100 : dmax;
+    let dmin = 0;
+    let dmax = 1000;
+    if (this.scaleXtoDataset) {
+      dmin = d3.min(this.dataset, (d) => {
+        return d3.min(d.points, (p) => p[0]);
+      });
+      dmin = isNaN(dmin) ? 0 : dmin;
+
+      dmax = d3.max(this.dataset, (d) => {
+        return d3.max(d.points, (p) => p[0]);
+      });
+      dmax = isNaN(dmax) ? 100 : dmax;
+    }
 
     const rmin = this.margin.left;
     let rmax = this.dimensions.width;
@@ -217,7 +222,7 @@ export class MSLineChartComponent implements AfterViewInit, OnChanges {
 
 
   /**
-   * 
+   *
    */
   private setYScale() {
 
@@ -230,9 +235,9 @@ export class MSLineChartComponent implements AfterViewInit, OnChanges {
         const bins = d3.histogram()
           .domain(this.scale.x.domain())
           .thresholds(this.scale.x.ticks(this.binCount))
-          .value((d) => d[0])
+          .value((p) => p[0])
           (d.points);
-  
+
         if (this.frequency) {
           return d3.max(bins, (b) => b.length);
         } else {
@@ -257,7 +262,7 @@ export class MSLineChartComponent implements AfterViewInit, OnChanges {
   }
 
   /**
-   * 
+   *
    */
   private setXAxis() {
     this.axes.x
@@ -266,7 +271,7 @@ export class MSLineChartComponent implements AfterViewInit, OnChanges {
   }
 
   /**
-   * 
+   *
    */
   private setYAxis() {
     this.axes.y

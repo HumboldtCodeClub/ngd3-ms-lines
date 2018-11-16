@@ -21,6 +21,7 @@ export class AppComponent {
   binned = true;
   binCount = 25;
   frequency = false;
+  scaleXtoDataset = false;
 
   binTypes: BinType[] = [
     { value: true, viewValue: 'Frequency'},
@@ -54,13 +55,13 @@ export class AppComponent {
         // calculate this points x and y values and add it to the temp array of points
         const a = Math.floor(Math.random() * 1001);
         const b = Math.floor(Math.random() * 101);
-        points.push([a,b]);
+        points.push([a, b]);
       }
 
-      // sorting points isn't needed for binned charts, 
+      // sorting points isn't needed for binned charts,
       // but if we don't sort when plotting each point it results in a 'scribbled' line
-      points.sort(function(a, b) { return a[0] - b[0]});
-      
+      points.sort(function(a, b) { return a[0] - b[0]; });
+
       // set the point values for this line
       data.points = points;
 

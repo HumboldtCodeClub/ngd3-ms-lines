@@ -8,15 +8,15 @@
         <mat-card-content>
           <section class="config-section">
             <mat-form-field class="config-margin">
-              <input matInput type="number" placeholder="Lines" [min]="1" [max]="10" [(ngModel)]="lineCount">
+              <input matInput type="number" placeholder="Lines" [min]="1" [max]="10" [(ngModel)]="lineCount" (ngModelChange)="refreshData()">
             </mat-form-field>
             <mat-form-field class="config-margin">
-              <input matInput type="number" placeholder="Points" [(ngModel)]="pointCount">
+              <input matInput type="number" placeholder="Points" [(ngModel)]="pointCount" (ngModelChange)="refreshData()">
             </mat-form-field>
           </section>
           <section class="config-section">
-              <mat-checkbox class="config-margin" [(ngModel)]="randomLineCount">Randomize line count</mat-checkbox>
-              <mat-checkbox class="config-margin" [(ngModel)]="randomPointCount">Randomize point count</mat-checkbox>
+              <mat-checkbox class="config-margin" [(ngModel)]="randomLineCount" (ngModelChange)="refreshData()">Randomize line count</mat-checkbox>
+              <mat-checkbox class="config-margin" [(ngModel)]="randomPointCount" (ngModelChange)="refreshData()">Randomize point count</mat-checkbox>
           </section>
           <section class="config-section">
               <mat-checkbox class="config-margin" [(ngModel)]="binned">Binned</mat-checkbox>
@@ -24,6 +24,7 @@
                 <input matInput type="number" placeholder="Bins" [(ngModel)]="binCount">
               </mat-form-field>
               <mat-checkbox class="config-margin" *ngIf="binned" [(ngModel)]="frequency">Frequency</mat-checkbox>
+              <mat-checkbox class="config-margin" [(ngModel)]="scaleXtoDataset">Scale x to dataset</mat-checkbox>
           </section>
           <section class="config-section">
               <button class="config-margin" mat-raised-button (click)="refreshData()">Refresh</button>
@@ -40,7 +41,7 @@
           Multi Series Line Chart
         </mat-card-title>
         <mat-card-content>
-            <ms-line-chart [dataset]="series" [frequency]="frequency" [binned]="binned" [binCount]="binCount"></ms-line-chart>
+            <ms-line-chart [dataset]="series" [frequency]="frequency" [binned]="binned" [binCount]="binCount" [scaleXtoDataset]="scaleXtoDataset"></ms-line-chart>
         </mat-card-content>
       </mat-card>
     </div>
