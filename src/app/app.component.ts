@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, AfterViewInit } from '@angular/core';
 
 import { LineData, CurveTypeEnum, BinTypeEnum } from './ms-line-chart.component';
 
@@ -7,7 +7,7 @@ import { LineData, CurveTypeEnum, BinTypeEnum } from './ms-line-chart.component'
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
+export class AppComponent implements AfterViewInit {
   series: LineData[] = [];
   lineCount = 3;
   pointCount = 200;
@@ -22,6 +22,10 @@ export class AppComponent {
   binTypes = BinTypeEnum;
   binTypeKeys = Object.keys(BinTypeEnum);
   selectedBinType = BinTypeEnum.FREQUENCY;
+
+  ngAfterViewInit() {
+    this.refreshData();
+  }
 
   refreshData() {
     // temporary array of line data
