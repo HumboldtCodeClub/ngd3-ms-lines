@@ -2,16 +2,25 @@ import { Component, Input, HostListener, ElementRef, AfterViewInit, OnChanges } 
 import * as d3 from 'd3';
 import { interpolatePath } from 'd3-interpolate-path';
 
+/**
+ *
+ */
 export class LineData {
   id = '';
   points: any[] = [];
 }
 
+/**
+ *
+ */
 export enum BinTypeEnum {
   AVERAGE = 'Average', // Use the average of all y values in each bin.
   FREQUENCY = 'Frequency', //
 }
 
+/**
+ *
+ */
 export enum CurveTypeEnum {
   BASIS = 'Basis', // a cubic basis spline, repeating the end points.
   BASIS_CLOSED = 'Basis Closed', // a closed cubic basis spline.
@@ -33,26 +42,45 @@ export enum CurveTypeEnum {
   STEP_BEFORE = 'Step Before', // a piecewise constant function.
 }
 
+/**
+ *
+ */
 @Component({
   selector: 'ms-line-chart',
   template: '<ng-content></ng-content>'
 })
 export class MSLineChartComponent implements AfterViewInit, OnChanges {
 
+  /*  */
   @Input() dataset: LineData[] = [];
+  /* */
   @Input() binned = true;
+  /* */
   @Input() binType = BinTypeEnum.FREQUENCY;
+  /* */
   @Input() binCount = 40;
+  /* */
   @Input() scaleXtoDataset = false;
+  /* */
   @Input() curveType = CurveTypeEnum.MONOTONE_X;
 
+  /* */
   private margin = { top: 40, right: 40, bottom: 40, left: 40 };
+  /* */
   private dimensions = { width: 0, height: 0 };
+  /* */
   private scale = { x: d3.scaleLinear(), y: d3.scaleLinear() };
+  /* */
   private axes = { x: null, y: null };
+  /* */
   private svg: any;
+  /* */
   private axesGroup: any;
+  /* */
   private lineGroup: any;
+  /* */
+  private dot: any;
+  /* */
   private customBins: number[] = [];
 
   /**
@@ -66,7 +94,9 @@ export class MSLineChartComponent implements AfterViewInit, OnChanges {
       .append('svg')
       .attr('class', 'ms-line-chart')
       .attr('height', 225)
-      .attr('class', 'w-100');
+      .attr('class', 'w-100')
+      .on('mouseout', this.leftChart())
+      .on('mousemove', this.moved());
 
     // Add a group element to the svg to hold the axes
     this.axesGroup = this.svg.append('g')
@@ -83,6 +113,13 @@ export class MSLineChartComponent implements AfterViewInit, OnChanges {
 
     // Add the y-axis group
     this.axes.y = this.axesGroup.append('g').attr('class', 'y-axis');
+
+    this.dot = this.svg.append('g')
+      .attr('class', 'dot-group');
+    //   // .attr('display', 'none');
+
+    this.dot.append('circle')
+      .attr('r', 2.5);
   }
 
   /**
@@ -110,6 +147,10 @@ export class MSLineChartComponent implements AfterViewInit, OnChanges {
     this.update();
   }
 
+  /**
+   *
+   * @param event description
+   */
   @HostListener('window:resize') onresize(event: any) {
     this.setDimensions();
     this.setXScale();
@@ -192,6 +233,8 @@ export class MSLineChartComponent implements AfterViewInit, OnChanges {
       .attr('stroke-linejoin', 'round')
       .attr('stroke-linecap', 'round')
       .attr('d', flatlineGenerator([0, 1000]))
+      .on('mouseenter', this.enteredPath)
+      .on('mouseout', () => d3.event.cancelBubble = true)
       .transition(lineTransition)
       .attrTween('d', (d) => {
         const previous = d3.select(`#ms-path-${d.id}`).attr('d');
@@ -249,7 +292,6 @@ export class MSLineChartComponent implements AfterViewInit, OnChanges {
       .range([rmin, rmax]);
 
     // Calculate custom bins
-
     this.customBins = [];
     if (this.binCount <= 0) { return; }
     const binWidth = dmax / this.binCount;
@@ -324,6 +366,9 @@ export class MSLineChartComponent implements AfterViewInit, OnChanges {
       .call(d3.axisLeft(this.scale.y));
   }
 
+  /**
+   *
+   */
   private selectCurveType() {
     switch (this.curveType) {
       case CurveTypeEnum.BASIS: {
@@ -385,4 +430,45 @@ export class MSLineChartComponent implements AfterViewInit, OnChanges {
       }
     }
   }
+
+  /**
+   *
+   */
+  private enteredPath() {
+    d3.selectAll('.ms-path')
+      .transition().duration(500)
+      .style('stroke-opacity', 0.1);
+    d3.select(this)
+      .transition().duration(500)
+      .style('stroke-opacity', 1);
+  }
+
+  /**
+   *
+   */
+  private leftChart(): (d, i) => void {
+    return (d, i) => {
+      this.lineGroup.selectAll('.ms-path')
+        .transition().duration(500)
+        .style('stroke-opacity', 1);
+    };
+  }
+
+  /**
+   *
+   */
+  private moved(): (d, i) => void {
+    return (d, i) => {
+      const mouseY = this.scale.y(d3.event.layerY);
+      const mouseX = this.scale.x.invert(d3.event.layerX);
+
+      const i1 = d3.bisectLeft(this.customBins, d3.event.layerX, 1);
+      const i0 = i1 - 1;
+      const i2 = mouseX - this.customBins[i0] > this.customBins[i1] - mouseX ? i1 : i0;
+      console.log(`i1: ${i1}, ${this.customBins[i2]}`);
+
+      this.dot.attr('transform', `translate(${this.customBins[i2]}, ${d3.event.layerY})`);
+    };
+  }
+
 }
