@@ -460,14 +460,18 @@ export class MSLineChartComponent implements AfterViewInit, OnChanges {
   private moved(): (d, i) => void {
     return (d, i) => {
       const mouseY = this.scale.y(d3.event.layerY);
-      const mouseX = this.scale.x.invert(d3.event.layerX);
+      const mouseX = this.scale.x(d3.event.layerX);
 
       const i1 = d3.bisectLeft(this.customBins, d3.event.layerX, 1);
       const i0 = i1 - 1;
       const i2 = mouseX - this.customBins[i0] > this.customBins[i1] - mouseX ? i1 : i0;
-      console.log(`i1: ${i1}, ${this.customBins[i2]}`);
+      console.log(`i1: ${i1}, ${this.customBins[i1]}`);
 
-      this.dot.attr('transform', `translate(${this.customBins[i2]}, ${d3.event.layerY})`);
+      // const s = this.dataset.poi.reduce((a, b) => Math.abs(a.values[i] - ym) < Math.abs(b.values[i] - ym) ? a : b);
+
+
+
+      this.dot.attr('transform', `translate(${this.scale.x(this.customBins[i0])}, ${d3.event.layerY})`);
     };
   }
 
